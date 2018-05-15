@@ -1,11 +1,11 @@
 'use strict';
 
-const RATE = "2000000000000000";
+const RATE = "100";
 
 const TVCrowdsale = artifacts.require("./TVCrowdsale.sol");
 const TVToken = artifacts.require("./TVToken.sol");
 
 module.exports = function(deployer, network, accounts) {
   let wallet = accounts[0];
-  return deployer.deploy(TVCrowdsale, RATE, wallet, TVToken.address, wallet);
+  return deployer.deploy(TVCrowdsale, RATE, process.env.WALLET || wallet, TVToken.address, wallet);
 };

@@ -1380,6 +1380,12 @@
       "links": {},
       "address": "0xCa75B87c6Ea4Ef838446642D9A555dB55ebbfF18",
       "transactionHash": "0x40ecc9172b34fa94253805539984fd9d2f384f59abb190af0ca07b5fe194f357"
+    },
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0xC1b88435C406Dd828a4192A303936B7D13cbf48f",
+      "transactionHash": "0x5023f4693dd08d0156d740c00d32318982dc45773e9d657121aee49a2b6dea7e"
     }
   },
   "schemaVersion": "2.0.0",

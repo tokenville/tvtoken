@@ -18,10 +18,10 @@ module.exports = {
     },
     mainnet: {
       provider() {
-        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://mainnet.infura.io/")
+        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://api.myetherapi.com/eth")
       },
       gas: 2700000,
-      gasPrice: 5000000000,
+      gasPrice: 15000000000,
       network_id: 1
     }
   }
