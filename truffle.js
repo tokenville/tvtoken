@@ -18,7 +18,7 @@ module.exports = {
     },
     mainnet: {
       provider() {
-        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://api.myetherapi.com/eth")
+        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://mainnet.infura.io/")
       },
       gas: 2700000,
       gasPrice: 15000000000,

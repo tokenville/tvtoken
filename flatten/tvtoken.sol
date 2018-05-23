@@ -322,7 +322,7 @@ contract PausableToken is StandardToken, Pausable {
 
 contract TVToken is PausableToken, MintableToken {
   string public name = 'TV Token';
-  string public symbol = 'TVT';
+  string public symbol = 'TV';
   uint8 public decimals = 18;
 
   function TVToken() public {}
