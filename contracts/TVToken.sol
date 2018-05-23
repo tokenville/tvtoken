@@ -5,7 +5,7 @@ import 'zeppelin-solidity/contracts/token/ERC20/MintableToken.sol';
 
 contract TVToken is PausableToken, MintableToken {
   string public name = 'TV Token';
-  string public symbol = 'TVT';
+  string public symbol = 'TV';
   uint8 public decimals = 18;
 
   function TVToken() public {}
