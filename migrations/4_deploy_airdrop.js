@@ -6,7 +6,7 @@ const DEUS_TO_TVT_RATE = {
   'mainnet': null
 };
 const deusToken = {
-  'ropsten': '0xa9c5350921fbd899e62847e7b79f0f156e8b3a4a',
+  'ropsten': '0x28a6fe39463ceaaa714da8270f7eb95b8505fccd',
   'mainnet': ''
 };
 
