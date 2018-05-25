@@ -1,22 +1,33 @@
 'use strict';
 const TVAirDrop = artifacts.require("./TVAirDrop.sol");
 const TVToken = artifacts.require("./TVToken.sol");
-const DEUS_TO_TVT_RATE = {
-  'ropsten': 300,
-  'mainnet': null
-};
-const deusToken = {
-  'ropsten': '0x28a6fe39463ceaaa714da8270f7eb95b8505fccd',
-  'mainnet': ''
+
+const conf = {
+  'ropsten': {
+    DEUS_TO_TV_RATE: 300,
+    DEUS_TOKEN: '0x28a6fe39463ceaaa714da8270f7eb95b8505fccd',
+    HOLDER_ADDRESS: '0x1feD8Ba9A9FDd72EF9038046ad148bEb413491b8'
+  },
+  'mainnet': {
+    DEUS_TO_TV_RATE: null,
+    DEUS_TOKEN: '',
+    HOLDER_ADDRESS: ''
+  }
 };
 
 module.exports = function(deployer, network, accounts) {
-  if (deusToken[network] && accounts[0]) {
-    console.log('Owner address: ' + accounts[0]);
-    return deployer.deploy(TVAirDrop, deusToken[network], TVToken.address, accounts[0], DEUS_TO_TVT_RATE[network]);
-  } else {
-    deusToken[network] && console.error('DeusToken address is undefined.');
-    accounts[0] && console.error('Owner address is undefined.');
-    DEUS_TO_TVT_RATE[network] && console.error('DEUS_TO_TVT_RATE is undefined.');
+  let params = conf[network];
+  let allParamsSet = params.DEUS_TO_TV_RATE && params.DEUS_TOKEN && params.HOLDER_ADDRESS;
+  if (allParamsSet)  {
+    return deployer.deploy(
+      TVAirDrop,
+      TVToken.address,
+      params.DEUS_TOKEN,
+      params.HOLDER_ADDRESS,
+      params.DEUS_TO_TV_RATE
+    );
   }
+  params.DEUS_TOKEN && console.error('DEUS_TO_TV_RATE is undefined.');
+  params.HOLDER_ADDRESS && console.error('DEUS_TOKEN is undefined.');
+  params.DEUS_TO_TV_RATE && console.error('HOLDER_ADDRESS is undefined.');
 };
