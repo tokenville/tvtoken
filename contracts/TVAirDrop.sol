@@ -5,29 +5,29 @@ import 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol';
 
 contract TVAirDrop {
     ERC721 public deusContract;
-    ERC20 public TVTContract;
-    uint256 public deusToTVTRate;
-    address public ownerAddress;
+    ERC20 public TVContract;
+    uint256 public deusToTVRate;
+    address public holder;
 
     mapping(uint256 => bool) internal droppedTokens;
 
-    event AirDropped(uint256 id_deus, address sender_address, address ownerAddress, uint256 collectTVTs);
+    event AirDropped(uint256 deusTokenId, address sender, address holder, uint256 collectTVs);
 
-    function TVAirDrop(address _deusContract, address _TVTContract, address _ownerAddress, uint256 _deusToTVTRate) public {
+    function TVAirDrop(address _TVContract, address _deusContract, address _holder, uint256 _deusToTVRate) public {
         deusContract = ERC721(_deusContract);
-        TVTContract = ERC20(_TVTContract);
-        deusToTVTRate = _deusToTVTRate;
-        ownerAddress = _ownerAddress;
+        TVContract = ERC20(_TVContract);
+        deusToTVRate = _deusToTVRate;
+        holder = _holder;
     }
 
-    function getTVTs() public {
+    function getTVs() public {
         uint256 deusTokenCount = deusContract.balanceOf(msg.sender);
         for (uint8 i = 0; i < deusTokenCount; i++) {
             uint256 deusToken = deusContract.tokenOfOwnerByIndex(msg.sender, i);
             if (!droppedTokens[deusToken]) {
-                TVTContract.transferFrom(ownerAddress, msg.sender, deusToTVTRate);
+                TVContract.transferFrom(holder, msg.sender, deusToTVRate);
                 droppedTokens[deusToken] = true;
-                emit AirDropped(deusToken, msg.sender, ownerAddress, deusToTVTRate);
+                emit AirDropped(deusToken, msg.sender, holder, deusToTVRate);
             }
         }
     }
