@@ -7,17 +7,17 @@ contract TVAirDrop {
     ERC721 public deusContract;
     ERC20 public TVContract;
     uint256 public deusToTVRate;
-    address public holderAddress;
+    address public holder;
 
     mapping(uint256 => bool) internal droppedTokens;
 
-    event AirDropped(uint256 deusTokenId, address senderAddress, address holderAddress, uint256 collectTVs);
+    event AirDropped(uint256 deusTokenId, address sender, address holder, uint256 collectTVs);
 
-    function TVAirDrop(address _TVContract, address _deusContract, address _holderAddress, uint256 _deusToTVRate) public {
+    function TVAirDrop(address _TVContract, address _deusContract, address _holder, uint256 _deusToTVRate) public {
         deusContract = ERC721(_deusContract);
         TVContract = ERC20(_TVContract);
         deusToTVRate = _deusToTVRate;
-        holderAddress = _holderAddress;
+        holder = _holder;
     }
 
     function getTVs() public {
@@ -25,9 +25,9 @@ contract TVAirDrop {
         for (uint8 i = 0; i < deusTokenCount; i++) {
             uint256 deusToken = deusContract.tokenOfOwnerByIndex(msg.sender, i);
             if (!droppedTokens[deusToken]) {
-                TVContract.transferFrom(holderAddress, msg.sender, deusToTVRate);
+                TVContract.transferFrom(holder, msg.sender, deusToTVRate);
                 droppedTokens[deusToken] = true;
-                emit AirDropped(deusToken, msg.sender, holderAddress, deusToTVRate);
+                emit AirDropped(deusToken, msg.sender, holder, deusToTVRate);
             }
         }
     }

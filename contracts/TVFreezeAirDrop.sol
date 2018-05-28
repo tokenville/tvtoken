@@ -1,10 +1,15 @@
 pragma solidity 0.4.21;
 
-import 'zeppelin-solidity/contracts/token/ERC20/ERC20.sol';
+import 'zeppelin-solidity/contracts/ownership/Ownable.sol';
 
-contract TVFreezeAirDrop {
+contract TVToken {
+    function transfer(address to, uint256 value) public returns (bool);
+    function transferFrom(address from, address to, uint256 value) public returns (bool);
+}
+
+contract TVFreezeAirDrop is Ownable {
     uint256 public unfreezeBlockNumber;
-    ERC20 public TVContract;
+    TVToken public TVContract;
     address public holder;
 
     mapping(address => uint256) internal frozenTVs;
@@ -15,22 +20,22 @@ contract TVFreezeAirDrop {
 
     function TVFreezeAirDrop(address _TVContract, address _holder, uint256 _unfreezeBlockNumber) public {
         unfreezeBlockNumber = _unfreezeBlockNumber;
-        TVContract = ERC20(_TVContract);
+        TVContract = TVToken(_TVContract);
         holder = _holder;
     }
 
     function revertFreezeTVs(address from) onlyOwner public {
-        require(frozenTokens[from] > 0);
+        require(frozenTVs[from] > 0);
         
-        TVContract.revertFunds(this, holder, frozenTokens[from]);
-        frozenTokens[to] = 0;
+        TVContract.transfer(holder, frozenTVs[from]);
+        frozenTVs[from] = 0;
 
-        emit RevertTVs(to, amount);
+        emit RevertTVs(from, frozenTVs[from]);
     }
 
     function sendFreezeTVs(address to, uint256 amount) onlyOwner public {
         TVContract.transferFrom(holder, this, amount);
-        frozenTokens[to] = amount;
+        frozenTVs[to] = amount;
 
         emit SendTVs(to, amount);
     }
@@ -38,14 +43,14 @@ contract TVFreezeAirDrop {
     function withdrawTVs() public {
         require(block.number > unfreezeBlockNumber);
 
-        uint256 amount = frozenTokens[msg.sender];
-        TVContract.transferFrom(this, msg.sender, amount);
-        frozenTokens[msg.sender] = 0;
+        uint256 amount = frozenTVs[msg.sender];
+        TVContract.transfer(msg.sender, amount);
+        frozenTVs[msg.sender] = 0;
 
         emit Withdraw(msg.sender, amount, block.number);
     }
 
-    function balanceOf() public view returns(uint256) {
-        return frozenTVs[msg.sender] || 0;
+    function freezeBalanceOf() public view returns(uint256) {
+        return frozenTVs[msg.sender];
     }
 }
