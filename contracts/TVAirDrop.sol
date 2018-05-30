@@ -25,8 +25,9 @@ contract TVAirDrop {
         for (uint8 i = 0; i < deusTokenCount; i++) {
             uint256 deusToken = deusContract.tokenOfOwnerByIndex(msg.sender, i);
             if (!droppedTokens[deusToken]) {
-                TVContract.transferFrom(holder, msg.sender, deusToTVRate);
                 droppedTokens[deusToken] = true;
+                bool successful = TVContract.transferFrom(holder, msg.sender, deusToTVRate);
+                if (!successful) revert("Transfer from holder to sender failed.");
                 emit AirDropped(deusToken, msg.sender, holder, deusToTVRate);
             }
         }

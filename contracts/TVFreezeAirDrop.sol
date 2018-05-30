@@ -26,15 +26,17 @@ contract TVFreezeAirDrop is Ownable {
 
     function revertFreezeTVs(address from) onlyOwner public {
         require(frozenTVs[from] > 0);
-        
-        TVContract.transfer(holder, frozenTVs[from]);
+
         frozenTVs[from] = 0;
+        bool successful = TVContract.transfer(holder, frozenTVs[from]);
+        if (!successful) revert("Transfer from TVFreezeAirDrop to holder contract failed.");
 
         emit RevertTVs(from, frozenTVs[from]);
     }
 
     function sendFreezeTVs(address to, uint256 amount) onlyOwner public {
-        TVContract.transferFrom(holder, this, amount);
+        bool successful = TVContract.transferFrom(holder, this, amount);
+        if (!successful) revert("Transfer from holder to TVFreezeAirDrop contract failed.");
         frozenTVs[to] = amount;
 
         emit SendTVs(to, amount);
@@ -44,8 +46,9 @@ contract TVFreezeAirDrop is Ownable {
         require(block.number > unfreezeBlockNumber);
 
         uint256 amount = frozenTVs[msg.sender];
-        TVContract.transfer(msg.sender, amount);
         frozenTVs[msg.sender] = 0;
+        bool successful  = TVContract.transfer(msg.sender, amount);
+        if (!successful) revert("Transfer from TVFreezeAirDrop to sender failed.");
 
         emit Withdraw(msg.sender, amount, block.number);
     }
