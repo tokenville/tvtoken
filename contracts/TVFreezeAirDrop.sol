@@ -27,8 +27,9 @@ contract TVFreezeAirDrop is Ownable {
     function revertFreezeTVs(address from) onlyOwner public {
         require(frozenTVs[from] > 0);
 
+        uint256 amount = frozenTVs[from];
         frozenTVs[from] = 0;
-        bool successful = TVContract.transfer(holder, frozenTVs[from]);
+        bool successful = TVContract.transfer(holder, amount);
         if (!successful) revert("Transfer from TVFreezeAirDrop to holder contract failed.");
 
         emit RevertTVs(from, frozenTVs[from]);
