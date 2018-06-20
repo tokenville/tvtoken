@@ -3,6 +3,11 @@ const TVAirDrop = artifacts.require("./TVAirDrop.sol");
 const TVToken = artifacts.require("./TVToken.sol");
 
 const conf = {
+  'development': {
+    DEUS_TO_TV_RATE: 300,
+    DEUS_TOKEN: '0x28a6fe39463ceaaa714da8270f7eb95b8505fccd',
+    HOLDER_ADDRESS: '0xA720f241d13F2AE8ACffa45cbcDBe3879276A6a3'
+  },
   'ropsten': {
     DEUS_TO_TV_RATE: 300,
     DEUS_TOKEN: '0x28a6fe39463ceaaa714da8270f7eb95b8505fccd',

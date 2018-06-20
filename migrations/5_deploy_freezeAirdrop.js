@@ -3,6 +3,10 @@ const TVFreezeAirDrop = artifacts.require("./TVFreezeAirDrop.sol");
 const TVToken = artifacts.require("./TVToken.sol");
 
 const conf = {
+  'development': {
+    UNFREEZE_BLOCK_NUMBER: 3326650,
+    HOLDER_ADDRESS: '0xA720f241d13F2AE8ACffa45cbcDBe3879276A6a3'
+  },
   'ropsten': {
     UNFREEZE_BLOCK_NUMBER: 3326650,
     HOLDER_ADDRESS: '0x1feD8Ba9A9FDd72EF9038046ad148bEb413491b8'
