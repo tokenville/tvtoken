@@ -9,8 +9,8 @@ contract TVCrowdsale {
 
 contract TVToken {
     function transferFrom(address from, address to, uint256 value) public returns (bool);
-
     function balanceOf(address _owner) public view returns (uint256);
+    function allowance(address _owner, address _spender) public view returns (uint256);
 }
 
 contract TVRefCrowdsale is Ownable {
@@ -45,8 +45,9 @@ contract TVRefCrowdsale is Ownable {
 
     function sendRefTVs(address refAddress) internal returns(bool) {
         uint256 balance = TVContract.balanceOf(refAddress);
-        if (balance >= TVThreshold) {
-            uint256 amount = (msg.value * TVCrowdsaleContract.currentRate()) * refPercentage / 100;
+        uint256 allowance = TVContract.allowance(holder, this);
+        uint256 amount = (msg.value * TVCrowdsaleContract.currentRate()) * refPercentage / 100;
+        if (balance >= TVThreshold && allowance >= amount) {
             bool successful = TVContract.transferFrom(holder, msg.sender, amount);
             if (!successful) revert("Transfer refTVs failed.");
             emit TransferRefTVs(holder, msg.sender, amount, TVThreshold, balance);
