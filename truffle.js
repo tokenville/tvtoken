@@ -21,7 +21,7 @@ module.exports = {
         return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://api.myetherapi.com/eth")
       },
       gas: 2700000,
-      gasPrice: 15000000000,
+      gasPrice: 50000000000,
       network_id: 1
     }
   }
