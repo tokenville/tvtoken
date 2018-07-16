@@ -1,5 +1,4 @@
-let gas = 0;
-let gasPrice = window.web3.toWei(0, 'gwei');
+let gasPrice = window.web3.toWei(10, 'gwei');
 
 window.onload = () => {
   let owner = '0xb8579b19da2108249d4391d73430abba665515ca';
@@ -469,7 +468,7 @@ window.onload = () => {
     contract: null
   };
   let tvNew = {
-    address: '',
+    address: '0xf3e693175db47264c99eca0f1c1c4a2c1aed3bd7',
     abi: [
       {
         "constant": true,
@@ -1018,10 +1017,10 @@ window.onload = () => {
 };
 
 function balanceOf(contract, account) {
-  console.log('Invoke balanceOf ', account);
+  // console.log('Invoke balanceOf ', account);
   return new Promise(res =>
     contract.balanceOf(account, (e, data) => {
-      console.log("Result balanceOf.", "Error: " + e, "Data: " + window.web3.fromWei(data, 'ether'));
+      // console.log("Result balanceOf.", "Error: " + e, "Data: " + window.web3.fromWei(data, 'ether'));
       e && console.error(e, account);
       data && res(data);
     })
@@ -1032,7 +1031,7 @@ function mint(contract, owner, to, amount) {
   console.log('Invoke mint.', 'To: ' + to, 'Amount: ' + amount);
   return new Promise(res =>
     contract.mint(to, amount, {from: owner, gas, gasPrice}, (e, data) => {
-      console.log("Result mint.", "Error: " + e, "Data: " + data);
+      // console.log("Result mint.", "Error: " + e, "Data: " + data);
       e && console.error(e);
       data && res(data);
     })
@@ -1043,8 +1042,8 @@ function mint(contract, owner, to, amount) {
 function transfer(contract, from, to, amount) {
   console.log('Invoke transfer.', from, to, amount);
   return new Promise(res =>
-    contract.transfer(to, amount, {from, gas, gasPrice}, (e, data) => {
-      console.log("Result mint.", "Error: " + e, "Data: " + data);
+    contract.transfer(to, amount, {from, gasPrice}, (e, data) => {
+      // console.log("Result mint.", "Error: " + e, "Data: " + data);
       e && console.error(e, to);
       data && res(data);
     })
