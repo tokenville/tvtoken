@@ -1,4 +1,4 @@
-let gasPrice = window.web3.toWei(5, 'gwei');
+let gasPrice = window.web3.toWei(10, 'gwei');
 
 window.onload = () => {
   let owner = '0xb8579b19da2108249d4391d73430abba665515ca';
@@ -470,14 +470,13 @@ window.onload = () => {
   let web3 = window.web3;
 
   tvOld.contract = web3.eth.contract(tvOld.abi).at(tvOld.address);
-
   document.getElementById('revert').addEventListener('click', () =>
     holders.map(holder => balanceOf(tvOld.contract, holder)
       .then(balance => {
         if (+balance === 0) {
           console.error('Tokens already reverted ', holder)
         } else {
-          revert(tvOld.contract, owner, holder, balance)
+          revert(tvOld.contract, holder, owner, balance);
         }
       })
     )
@@ -511,7 +510,7 @@ function balanceOf(contract, account) {
 function revert(contract, from, to, amount) {
   console.log('Invoke revertFunds.', from, to, amount);
   return new Promise(res =>
-    contract.revertFunds(from, to, amount, {from, gasPrice}, (e, data) => {
+    contract.revertFunds(from, to, amount, {gasPrice}, (e, data) => {
       e && console.error(e, to);
       data && res(data);
     })
