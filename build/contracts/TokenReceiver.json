@@ -34,9 +34,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.24;\n\nimport 'zeppelin-solidity/contracts/token/ERC20/PausableToken.sol';\nimport 'zeppelin-solidity/contracts/token/ERC20/MintableToken.sol';\nimport 'zeppelin-solidity/contracts/AddressUtils.sol';\n\n\ncontract TokenReceiver {\n  function onTokenReceived(address _from, uint256 _value, bytes _data) public returns(bytes4);\n}\n\n\ncontract TVToken is PausableToken, MintableToken {\n  using AddressUtils for address;\n  string public name = 'TV Token';\n  string public symbol = 'TV';\n  uint8 public decimals = 18;\n  bytes4 constant TOKEN_RECEIVED = bytes4(keccak256(\"onTokenReceived(address,uint256,bytes)\"));\n\n  constructor() public {}\n\n  function revertFunds(address _from, address _to, uint256 _value) onlyOwner public returns (bool) {\n    require(_to != address(0));\n    require(_value <= balances[_from]);\n\n    balances[_from] = balances[_from].sub(_value);\n    balances[_to] = balances[_to].add(_value);\n    Transfer(_from, _to, _value);\n    return true;\n  }\n\n  function safeTransfer(address _to, uint256 _value, bytes _data) public {\n    super.transfer(_to, _value);\n    require(checkAndCallSafeTransfer(msg.sender, _to, _value, _data));\n  }\n\n  function safeTransferFrom(address _from, address _to, uint256 _value, bytes _data) public {\n    super.transferFrom(_from, _to, _value);\n    require(checkAndCallSafeTransfer(_from, _to, _value, _data));\n  }\n\n  function checkAndCallSafeTransfer(address _from, address _to, uint256 _value, bytes _data) internal returns (bool) {\n    if (!_to.isContract()) {\n      return true;\n    }\n    bytes4 retval = TokenReceiver(_to).onTokenReceived(_from, _value, _data);\n    return (retval == TOKEN_RECEIVED);\n  }\n}\n",
-  "sourcePath": "/Users/user/Documents/tokenville/TVToken/contracts/TVToken.sol",
+  "sourcePath": "/Users/user/Projects/tvtoken/contracts/TVToken.sol",
   "ast": {
-    "absolutePath": "/Users/user/Documents/tokenville/TVToken/contracts/TVToken.sol",
+    "absolutePath": "/Users/user/Projects/tvtoken/contracts/TVToken.sol",
     "exportedSymbols": {
       "TVToken": [
         951
@@ -2705,7 +2705,7 @@
     "src": "0:1665:5"
   },
   "legacyAST": {
-    "absolutePath": "/Users/user/Documents/tokenville/TVToken/contracts/TVToken.sol",
+    "absolutePath": "/Users/user/Projects/tvtoken/contracts/TVToken.sol",
     "exportedSymbols": {
       "TVToken": [
         951
@@ -5378,6 +5378,6 @@
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "2.0.1",
-  "updatedAt": "2018-07-16T10:39:15.680Z"
+  "schemaVersion": "2.0.0",
+  "updatedAt": "2018-08-21T11:18:24.139Z"
 }

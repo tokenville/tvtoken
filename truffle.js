@@ -11,9 +11,10 @@ module.exports = {
     },
     ropsten: {
       provider() {
-        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://api.myetherapi.com/rop")
+        return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://ropsten.infura.io/")
       },
       gas: 4700000,
+      gasPrice: 100000000000,
       network_id: 3
     },
     mainnet: {
