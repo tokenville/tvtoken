@@ -18,6 +18,12 @@ const conf = {
     TV_CROWDSALE: TVCrowdsale.networks['3'] && TVCrowdsale.networks['3'].address || '',
     TV_TOKEN: TVToken.networks['3'] && TVToken.networks['3'].address || ''
   },
+  'kovan': {
+    WALLET: '0x718918c59Ae96489abA51981970E4FaD30c13911',
+    MANAGER: '0x7f6e3A92Bea716Aa332cF06b50FeC05980931096',
+    TV_CROWDSALE: TVCrowdsale.networks['42'] && TVCrowdsale.networks['42'].address || '',
+    TV_TOKEN: TVToken.networks['42'] && TVToken.networks['42'].address || ''
+  },
   'mainnet': {
     MANAGER: '0x1feD8Ba9A9FDd72EF9038046ad148bEb413491b8'
   }
