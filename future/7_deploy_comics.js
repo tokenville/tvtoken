@@ -1,8 +1,8 @@
 'use strict';
 
 const TVComics = artifacts.require("./TVComics.sol");
-const TVToken = require('../../tvtoken/build/contracts/TVToken.json');
-const TVCrowdsale = require('../../tvtoken/build/contracts/TVCrowdsale.json');
+const TVToken = require('../build/contracts/TVToken.json');
+const TVCrowdsale = require('../build/contracts/TVCrowdsale.json');
 
 
 const conf = {
