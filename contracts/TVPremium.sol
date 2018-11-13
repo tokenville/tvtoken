@@ -7,12 +7,12 @@ contract ITVCoupon {
 
 }
 
-contract TVCrowdsale {
+contract ITVCrowdsale {
     uint256 public currentRate;
     function buyTokens(address _beneficiary) public payable;
 }
 
-contract TVToken {
+contract ITVToken {
     function transfer(address _to, uint256 _value) public returns (bool);
     function safeTransfer(address _to, uint256 _value, bytes _data) public;
 }
@@ -47,7 +47,7 @@ contract TVPremium is Ownable, ERC721Token {
         address _manager,
         uint _discountPercentage,
         address _wallet
-    ) {
+    ) public ERC721Token("TVPremium Token", "TVP")  {
         TVCouponAddress = _TVCouponAddress;
         manager = _manager;
         discountPercentage = _discountPercentage;
@@ -70,7 +70,7 @@ contract TVPremium is Ownable, ERC721Token {
             require(!usedCoupons[couponId]);
             usedCoupons[couponId] = true;
         }
-        TVToken(TVTokenAddress).transfer(wallet, _value);
+        ITVToken(TVTokenAddress).transfer(wallet, _value);
         _from = this == _from ? checkAndBuySender : _from;
         checkAndBuySender = address(0);
 
@@ -82,18 +82,22 @@ contract TVPremium is Ownable, ERC721Token {
     }
 
     function changeAndBuyPremium(uint couponId) public payable {
-        uint rate = TVCrowdsale(TVCrowdsaleAddress).currentRate();
+        uint rate = ITVCrowdsale(TVCrowdsaleAddress).currentRate();
         uint premiumPrice = couponId == 0 ? price : price - (price * discountPercentage) / 100;
 
         uint priceWei = price / rate;
         require(priceWei == msg.value);
 
-        TVCrowdsale(TVCrowdsaleAddress).buyTokens.value(msg.value)(this);
+        ITVCrowdsale(TVCrowdsaleAddress).buyTokens.value(msg.value)(this);
         bytes memory data = toBytes(couponId);
         checkAndBuySender = msg.sender;
-        TVToken(TVTokenAddress).safeTransfer(this, premiumPrice, data);
+        ITVToken(TVTokenAddress).safeTransfer(this, premiumPrice, data);
 
         emit ChangeAndBuyPremium(msg.sender, rate, priceWei, couponId);
+    }
+
+    function getDiscountPrice() public view returns(uint) {
+        return price - (price * discountPercentage) / 100;
     }
 
     function changePrice(uint _price) public onlyOwnerOrManager {
