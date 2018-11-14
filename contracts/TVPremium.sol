@@ -30,7 +30,7 @@ contract TVPremium is Ownable, ERC721Token {
     uint internal incrementId = 0;
     address internal checkAndBuySender;
 
-    mapping(uint => bool) usedCoupons;
+    mapping(uint => bool) public usedCoupons;
 
     modifier onlyOwnerOrManager() {
         require(msg.sender == owner || manager == msg.sender);
