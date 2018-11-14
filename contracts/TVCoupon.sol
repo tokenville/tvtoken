@@ -21,6 +21,7 @@ contract TVCoupon is Ownable, ERC721Token {
         require(!received[msg.sender]);
         require(ITVToken(TVTokenAddress).balanceOf(msg.sender) > 0);
         received[msg.sender] = true;
+        incrementId++;
         super._mint(msg.sender, incrementId);
     }
 }
