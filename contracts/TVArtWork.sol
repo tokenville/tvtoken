@@ -61,7 +61,10 @@ contract TVArtWork is Ownable, ERC721Token {
         _from = this == _from ? checkAndBuySender : _from;
         checkAndBuySender = address(0);
 
-        super.transferFrom(holder, _from, tokenId);
+        require(_from != address(0));
+        require(holder != address(0));
+        super.removeTokenFrom(holder, tokenId);
+        addTokenTo(_from, tokenId);
 
         emit TokenReceived(_from, _value, _data, tokenId);
         return TOKEN_RECEIVED;
