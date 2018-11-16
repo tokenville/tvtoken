@@ -2648,6 +2648,12 @@
       "links": {},
       "address": "0x89a65d55886e6803d85529f7a42759fc1a074595",
       "transactionHash": "0x4bd6b249d31a61ce3e0c42069c0ffb9896fcf30d77d91f4fc6fbf3dd20793cdc"
+    },
+    "1": {
+      "events": {},
+      "links": {},
+      "address": "0x8f3061739ee46a2ad4e3a6967902c2e4c3aaf894",
+      "transactionHash": "0x060b9c0dde4d2dc80f02dd736eba140bb0e9b2b2eaca989a9fb702ab079e9f59"
     }
   },
   "schemaVersion": "2.0.0",
