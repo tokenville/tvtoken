@@ -85,7 +85,7 @@ contract TVPremium is Ownable, ERC721Token {
         uint rate = ITVCrowdsale(TVCrowdsaleAddress).currentRate();
         uint premiumPrice = couponId == 0 ? price : price - (price * discountPercentage) / 100;
 
-        uint priceWei = price / rate;
+        uint priceWei = premiumPrice / rate;
         require(priceWei == msg.value);
 
         ITVCrowdsale(TVCrowdsaleAddress).buyTokens.value(msg.value)(this);

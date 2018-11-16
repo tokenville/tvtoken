@@ -17,6 +17,6 @@
     "lodash": "^4.17.5",
     "truffle-hdwallet-provider": "0.0.5",
     "truffle-privatekey-provider": "0.1.0",
-    "zeppelin-solidity": "^1.9.0"
+    "zeppelin-solidity": "1.9.0"
   }
 }
