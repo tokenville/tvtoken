@@ -19,7 +19,7 @@ const conf = {
   },
   'mainnet': {
     MANAGER: '0x1feD8Ba9A9FDd72EF9038046ad148bEb413491b8',
-    TYPES_COUNT: 0
+    TYPES_COUNT: 5
   }
 };
 
