@@ -5,7 +5,6 @@ import "zeppelin-solidity/contracts/token/ERC721/ERC721Receiver.sol";
 
 contract ITVToken {
     function balanceOf(address _owner) public view returns (uint256);
-
     function transfer(address _to, uint256 _value) public returns (bool);
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool);
     function safeTransfer(address _to, uint256 _value, bytes _data) public;
@@ -13,17 +12,13 @@ contract ITVToken {
 
 contract IArtefact {
     function artefacts(uint id) public returns (uint, uint);
-
     function ownerOf(uint256 _tokenId) public view returns (address);
 }
 
 contract ITVKey {
     function transferFrom(address _from, address _to, uint256 _tokenId) public;
-
     function keys(uint id) public returns (uint, uint);
-
-    function mint(address to, uint chestId, uint lotteryId) public returns (uint);
-
+    function mint(address to, uint chestId) public returns (uint);
     function burn(uint id) public;
 }
 
@@ -36,7 +31,8 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint id;
         uint[] typeIds;
         address[] tokens;
-        uint chestTypeId;
+        uint chestId;
+        uint lotteryId;
         bool created;
     }
 
@@ -44,7 +40,6 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint id;
         address bank;
         uint[] collections;
-        uint[] chests;
         uint bankPercentage;
         bool isActive;
         bool created;
@@ -56,6 +51,7 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint percentage;
         uint count;
         uint keysCount;
+        uint openedCount;
         bool created;
     }
 
@@ -66,6 +62,7 @@ contract TVLottery is Ownable, ERC721Receiver {
 
     event KeyReceived(uint keyId, uint lotteryId, uint collectionId, uint chestId, address receiver);
     event ChestOpened(uint keyId, uint lotteryId, uint chestId, uint reward, address receiver);
+    event ArtefactUsed(uint id, address token, address sender);
 
     modifier onlyOwnerOrManager() {
         require(msg.sender == owner || manager == msg.sender);
@@ -87,12 +84,14 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint256 _tokenId,
         bytes
     ) public returns (bytes4) {
+        require(msg.sender == TVKeyAddress);
         (, uint chestId) = ITVKey(TVKeyAddress).keys(_tokenId);
         Chest memory chest = chests[chestId];
         Lottery memory lottery = lotteries[chest.lotteryId];
 
         ITVKey(TVKeyAddress).transferFrom(this, lottery.bank, _tokenId);
-        lottery.bankPercentage -= chest.percentage;
+        lotteries[chest.lotteryId].bankPercentage -= chest.percentage;
+        chests[chestId].openedCount = chest.openedCount + 1;
         uint reward = getChestReward(chestId);
         ITVToken(TVTokenAddress).transferFrom(lottery.bank, _from, reward);
         emit ChestOpened(_tokenId, lottery.id, chest.id, reward, _from);
@@ -103,36 +102,26 @@ contract TVLottery is Ownable, ERC721Receiver {
         Chest memory chest = chests[chestId];
         Lottery memory lottery = lotteries[chest.lotteryId];
         uint bankBalance = ITVToken(TVTokenAddress).balanceOf(lottery.bank);
-        uint onePercentage = bankBalance / lottery.bankPercentage * 100;
+        uint onePercentage = bankBalance / lottery.bankPercentage;
         return chest.percentage * onePercentage;
     }
 
     function getKey(uint lotteryId, uint collectionId, uint[] elementIds) public returns (uint) {
         Lottery memory lottery = lotteries[lotteryId];
         Collection memory collection = collections[collectionId];
-        (bool found, uint collectionIndex) = findCollectionIndex(collectionId, lottery);
-        require(found);
-        Chest memory chest = chests[collectionIndex];
+        Chest memory chest = chests[collection.chestId];
 
+        require(collection.lotteryId == lotteryId);
         require(lottery.created && lottery.isActive && collection.created);
         require(chest.keysCount > 0);
 
         checkCollection(collection, elementIds);
 
-        chest.keysCount--;
-        uint keyId = ITVKey(TVKeyAddress).mint(msg.sender, chest.id, lotteryId);
+        chests[collection.chestId].keysCount = chest.keysCount - 1;
+        uint keyId = ITVKey(TVKeyAddress).mint(msg.sender, chest.id);
         emit KeyReceived(keyId, lotteryId, collectionId, chest.id, msg.sender);
 
         return keyId;
-    }
-
-    function findCollectionIndex(uint collectionId, Lottery lottery) internal pure returns (bool, uint) {
-        for (uint i = 0; i < lottery.collections.length; i++) {
-            if (lottery.collections[i] == collectionId) {
-                return (true, i);
-            }
-        }
-        return (false, 0);
     }
 
     function checkCollection(Collection collection, uint[] elementsIds) internal {
@@ -143,6 +132,7 @@ contract TVLottery is Ownable, ERC721Receiver {
             require(!usedElements[id][collection.tokens[i]]);
             require(IArtefact(collection.tokens[i]).ownerOf(id) == msg.sender);
             usedElements[id][collection.tokens[i]] = true;
+            emit ArtefactUsed(id, collection.tokens[i], msg.sender);
         }
     }
 
@@ -150,11 +140,20 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint id,
         uint[] typeIds,
         address[] tokens,
-        uint chestTypeId,
+        uint chestId,
+        uint lotteryId,
         bool created
     ) public onlyOwnerOrManager {
         require(typeIds.length == tokens.length);
-        collections[id] = Collection(id, typeIds, tokens, chestTypeId, created);
+        collections[id] = Collection(id, typeIds, tokens, chestId, lotteryId, created);
+    }
+
+    function getCollectionElementsCount(uint id) public view returns(uint) {
+        return collections[id].typeIds.length;
+    }
+
+    function getCollectionElementByIndex(uint id, uint index) public view returns(uint, address) {
+        return (collections[id].typeIds[index], collections[id].tokens[index]);
     }
 
     function setChest(
@@ -163,21 +162,29 @@ contract TVLottery is Ownable, ERC721Receiver {
         uint percentage,
         uint count,
         uint keysCount,
+        uint openedCount,
         bool created
     ) public onlyOwnerOrManager {
-        chests[id] = Chest(id, lotteryId, percentage, count, keysCount, created);
+        chests[id] = Chest(id, lotteryId, percentage, count, keysCount, openedCount, created);
     }
 
     function setLottery(
         uint id,
         address bank,
         uint[] _collections,
-        uint[] _chests,
         uint bankPercentage,
         bool isActive,
         bool created
     ) public onlyOwnerOrManager {
-        lotteries[id] = Lottery(id, bank, _collections, _chests, bankPercentage, isActive, created);
+        lotteries[id] = Lottery(id, bank, _collections, bankPercentage, isActive, created);
+    }
+
+    function getLotteryCollectionCount(uint id) public view returns(uint) {
+        return lotteries[id].collections.length;
+    }
+
+    function getLotteryCollectionByIndex(uint id, uint index) public view returns(uint) {
+        return lotteries[id].collections[index];
     }
 
     function changeLotteryBank(uint lotteryId, address bank, uint bankPercentage) public onlyOwnerOrManager {
@@ -185,10 +192,8 @@ contract TVLottery is Ownable, ERC721Receiver {
         lotteries[lotteryId].bankPercentage = bankPercentage;
     }
 
-    function updateCollections(uint lotteryId, uint[] _collections, uint[] _chests) public onlyOwnerOrManager {
-        require(_chests.length == _collections.length);
+    function updateCollections(uint lotteryId, uint[] _collections) public onlyOwnerOrManager {
         lotteries[lotteryId].collections = _collections;
-        lotteries[lotteryId].chests = _chests;
     }
 
     function setLotteryActive(uint id, bool isActive) public onlyOwnerOrManager {
