@@ -30,7 +30,7 @@ module.exports = {
         return new PrivateKeyProvider(process.env.PRIVATE_KEY, "https://mainnet.infura.io/")
       },
       gas: 4700000,
-      gasPrice: 5000000000,
+      gasPrice: 10000000000,
       network_id: 1
     }
   }
